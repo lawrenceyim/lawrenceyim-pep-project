@@ -16,8 +16,9 @@ public class MessageService {
 
     public Message addMessage(Message message) {
         if (message.getMessage_text().isEmpty() ||
-                message.getMessage_text().length() > 255 ||
-                accountDao.getAccountById(message.posted_by) == null) {
+            message.getMessage_text().length() > 255 ||
+            accountDao.getAccountById(message.posted_by) == null) 
+        {
             return null;
         }
         return messageDao.insertMessage(message);
@@ -25,5 +26,9 @@ public class MessageService {
 
     public List<Message> getAllMessages() {
         return messageDao.getAllMessages();
+    }
+
+    public Message getMessageById(int messageId) {
+        return messageDao.getMessageById(messageId);
     }
 }

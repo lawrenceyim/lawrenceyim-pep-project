@@ -54,4 +54,27 @@ public class MessageDao {
         }
         return messages;
     }
+
+    public Message getMessageById(int messageId) {
+        try (Connection connection = ConnectionUtil.getConnection()) {
+            String sql = "SELECT * FROM message WHERE message_id = ? LIMIT 1;";
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setInt(1, messageId);
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (!resultSet.next()) {
+                return null;
+            }
+            
+            Message message = new Message();
+            message.setMessage_id(resultSet.getInt("message_id"));
+            message.setMessage_text(resultSet.getString("message_text"));
+            message.setPosted_by(resultSet.getInt("posted_by"));
+            message.setTime_posted_epoch(resultSet.getLong("time_posted_epoch"));
+            return message;
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return null;
+    }
 }

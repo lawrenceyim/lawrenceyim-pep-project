@@ -30,7 +30,9 @@ public class SocialMediaController {
      */
     public Javalin startAPI() {
         Javalin app = Javalin.create();
+
         app.get("/messages", this::getAllMessagesHandler);
+        app.get("/messages/{message_id}", this::getMessageById);
 
         app.post("/login", this::loginHandler);
         app.post("/messages", this::addMessageHandler);
@@ -72,5 +74,14 @@ public class SocialMediaController {
     private void getAllMessagesHandler(Context context) {
         List<Message> messages = messageService.getAllMessages();
         context.json(messages).status(200);
+    }
+
+    private void getMessageById(Context context) {
+        int messageId = Integer.parseInt(context.pathParam("message_id"));
+        Message message = messageService.getMessageById(messageId);
+        if (message != null) {
+            context.json(message);
+        }
+        context.status(200);
     }
 }
