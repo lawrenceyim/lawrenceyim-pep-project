@@ -40,4 +40,15 @@ public class MessageService {
     public Message getMessageById(int messageId) {
         return messageDao.getMessageById(messageId);
     }
+
+    public Message updateMessageById(Message message) {
+        if (message.getMessage_text().isEmpty() ||
+            message.getMessage_text().length() > 255 ||
+            messageDao.getMessageById(message.getMessage_id()) == null) 
+        {
+            return null;
+        }
+        messageDao.updateMessageById(message);
+        return messageDao.getMessageById(message.getMessage_id());
+    }
 }

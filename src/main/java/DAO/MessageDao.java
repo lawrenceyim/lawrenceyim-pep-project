@@ -90,4 +90,20 @@ public class MessageDao {
         }
         return null;
     }
+
+    public int updateMessageById(Message message) {
+        try (Connection connection = ConnectionUtil.getConnection()) {
+            String sql = "UPDATE message SET message_text = ? WHERE message_id = ?;";
+
+            PreparedStatement preparedStatement = connection.prepareStatement(sql,
+                    PreparedStatement.RETURN_GENERATED_KEYS);
+            preparedStatement.setString(1, message.getMessage_text());
+            preparedStatement.setInt(2, message.getMessage_id());
+            int rowsUpdated = preparedStatement.executeUpdate();
+            return rowsUpdated;
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return 0;
+    }
 }
