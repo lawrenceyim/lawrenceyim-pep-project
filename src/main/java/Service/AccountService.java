@@ -20,4 +20,8 @@ public class AccountService {
         }
         return accountDao.insertAccount(account);
     }
+
+    public Account getAccountByLoginCredentials(Account account) {
+        return accountDao.getAccountByLoginCredentials(account);
+    }
 }

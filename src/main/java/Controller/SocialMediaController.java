@@ -26,6 +26,7 @@ public class SocialMediaController {
     public Javalin startAPI() {
         Javalin app = Javalin.create();
         app.post("/register", this::registerHandler);
+        app.post("/login", this::loginHandler);
 
         return app;
     }
@@ -38,6 +39,16 @@ public class SocialMediaController {
             return;
         }
         context.status(400);
+    }
+
+    private void loginHandler(Context context) {
+        Account account = context.bodyAsClass(Account.class);
+        account = accountService.getAccountByLoginCredentials(account);
+        if (account != null) {
+            context.json(account).status(200);
+            return;
+        }
+        context.status(401);
     }
 
 }
