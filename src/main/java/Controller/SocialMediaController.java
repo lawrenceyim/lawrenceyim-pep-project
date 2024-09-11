@@ -31,12 +31,13 @@ public class SocialMediaController {
     public Javalin startAPI() {
         Javalin app = Javalin.create();
         
-        app.delete("messages/{message_id}", this::deleteMessageById);
+        app.delete("messages/{message_id}", this::deleteMessageByIdHandler);
 
+        app.get("accounts/{account_id}/messages", this::getAllMessagesByAccountIdHandler);
         app.get("/messages", this::getAllMessagesHandler);
-        app.get("/messages/{message_id}", this::getMessageById);
+        app.get("/messages/{message_id}", this::getMessageByIdHandler);
 
-        app.patch("messages/{message_id}", this::updateMessageById);
+        app.patch("messages/{message_id}", this::updateMessageByIdHandler);
 
         app.post("/login", this::loginHandler);
         app.post("/messages", this::addMessageHandler);
@@ -55,7 +56,7 @@ public class SocialMediaController {
         context.status(400);
     }
 
-    public void deleteMessageById(Context context) {
+    public void deleteMessageByIdHandler(Context context) {
         int messageId = Integer.parseInt(context.pathParam("message_id"));
         Message deletedMessage = messageService.deleteMessageById(messageId);
         if (deletedMessage != null) {
@@ -69,7 +70,13 @@ public class SocialMediaController {
         context.json(messages).status(200);
     }
 
-    private void getMessageById(Context context) {
+    private void getAllMessagesByAccountIdHandler(Context context) {
+        int accountId = Integer.parseInt(context.pathParam("account_id"));
+        List<Message> messages = messageService.getAllMessagesByAccountId(accountId);
+        context.json(messages).status(200);
+    }
+
+    private void getMessageByIdHandler(Context context) {
         int messageId = Integer.parseInt(context.pathParam("message_id"));
         Message message = messageService.getMessageById(messageId);
         if (message != null) {
@@ -98,7 +105,7 @@ public class SocialMediaController {
         context.status(400);
     }
 
-    private void updateMessageById(Context context) {
+    private void updateMessageByIdHandler(Context context) {
         int messageId = Integer.parseInt(context.pathParam("message_id"));
         Message message = context.bodyAsClass(Message.class);
         message.setMessage_id(messageId);
