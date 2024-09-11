@@ -1,7 +1,9 @@
 package Controller;
 
 import Model.Account;
+import Model.Message;
 import Service.AccountService;
+import Service.MessageService;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
 
@@ -14,6 +16,7 @@ import io.javalin.http.Context;
  */
 public class SocialMediaController {
     private AccountService accountService = new AccountService();
+    private MessageService messageService = new MessageService();
 
     /**
      * In order for the test cases to work, you will need to write the endpoints in
@@ -27,7 +30,7 @@ public class SocialMediaController {
         Javalin app = Javalin.create();
         app.post("/register", this::registerHandler);
         app.post("/login", this::loginHandler);
-
+        app.post("/messages", this::messagesHandler);
         return app;
     }
 
@@ -51,4 +54,13 @@ public class SocialMediaController {
         context.status(401);
     }
 
+    private void messagesHandler(Context context) {
+        Message message = context.bodyAsClass(Message.class);
+        message = messageService.addMessage(message);
+        if (message != null) {
+            context.json(message).status(200);
+            return;
+        }
+        context.status(400);
+    }
 }

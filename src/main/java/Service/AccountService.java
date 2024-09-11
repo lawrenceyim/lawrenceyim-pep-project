@@ -5,14 +5,13 @@ import Model.Account;
 
 public class AccountService {
     private AccountDao accountDao;
-    
+
     public AccountService() {
         accountDao = new AccountDao();
     }
-    
+
     public Account addAccount(Account account) {
-        if (
-            account.getUsername().isEmpty() ||
+        if (account.getUsername().isEmpty() ||
             account.getPassword().length() < 4 ||
             accountDao.getAccountByUsername(account.getUsername()) != null
         ) {
