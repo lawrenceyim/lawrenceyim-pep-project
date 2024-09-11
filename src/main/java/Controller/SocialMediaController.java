@@ -1,5 +1,7 @@
 package Controller;
 
+import java.util.List;
+
 import Model.Account;
 import Model.Message;
 import Service.AccountService;
@@ -28,9 +30,12 @@ public class SocialMediaController {
      */
     public Javalin startAPI() {
         Javalin app = Javalin.create();
-        app.post("/register", this::registerHandler);
+        app.get("/messages", this::getAllMessagesHandler);
+
         app.post("/login", this::loginHandler);
-        app.post("/messages", this::messagesHandler);
+        app.post("/messages", this::addMessageHandler);
+        app.post("/register", this::registerHandler);
+
         return app;
     }
 
@@ -54,7 +59,7 @@ public class SocialMediaController {
         context.status(401);
     }
 
-    private void messagesHandler(Context context) {
+    private void addMessageHandler(Context context) {
         Message message = context.bodyAsClass(Message.class);
         message = messageService.addMessage(message);
         if (message != null) {
@@ -62,5 +67,10 @@ public class SocialMediaController {
             return;
         }
         context.status(400);
+    }
+
+    private void getAllMessagesHandler(Context context) {
+        List<Message> messages = messageService.getAllMessages();
+        context.json(messages).status(200);
     }
 }
