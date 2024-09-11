@@ -30,6 +30,8 @@ public class SocialMediaController {
      */
     public Javalin startAPI() {
         Javalin app = Javalin.create();
+        
+        app.delete("messages/{message_id}", this::deleteMessageById);
 
         app.get("/messages", this::getAllMessagesHandler);
         app.get("/messages/{message_id}", this::getMessageById);
@@ -41,26 +43,6 @@ public class SocialMediaController {
         return app;
     }
 
-    private void registerHandler(Context context) {
-        Account account = context.bodyAsClass(Account.class);
-        account = accountService.addAccount(account);
-        if (account != null) {
-            context.json(account).status(200);
-            return;
-        }
-        context.status(400);
-    }
-
-    private void loginHandler(Context context) {
-        Account account = context.bodyAsClass(Account.class);
-        account = accountService.getAccountByLoginCredentials(account);
-        if (account != null) {
-            context.json(account).status(200);
-            return;
-        }
-        context.status(401);
-    }
-
     private void addMessageHandler(Context context) {
         Message message = context.bodyAsClass(Message.class);
         message = messageService.addMessage(message);
@@ -69,6 +51,15 @@ public class SocialMediaController {
             return;
         }
         context.status(400);
+    }
+
+    public void deleteMessageById(Context context) {
+        int messageId = Integer.parseInt(context.pathParam("message_id"));
+        Message deletedMessage = messageService.deleteMessageById(messageId);
+        if (deletedMessage != null) {
+            context.json(deletedMessage);
+        }
+        context.status(200);
     }
 
     private void getAllMessagesHandler(Context context) {
@@ -83,5 +74,25 @@ public class SocialMediaController {
             context.json(message);
         }
         context.status(200);
+    }
+
+    private void loginHandler(Context context) {
+        Account account = context.bodyAsClass(Account.class);
+        account = accountService.getAccountByLoginCredentials(account);
+        if (account != null) {
+            context.json(account).status(200);
+            return;
+        }
+        context.status(401);
+    }
+
+    private void registerHandler(Context context) {
+        Account account = context.bodyAsClass(Account.class);
+        account = accountService.addAccount(account);
+        if (account != null) {
+            context.json(account).status(200);
+            return;
+        }
+        context.status(400);
     }
 }

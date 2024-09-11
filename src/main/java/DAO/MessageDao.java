@@ -11,28 +11,17 @@ import Model.Message;
 import Util.ConnectionUtil;
 
 public class MessageDao {
-    public Message insertMessage(Message message) {
+    public int deleteMessageById(int messageId) {
         try (Connection connection = ConnectionUtil.getConnection()) {
-            String sql = "INSERT INTO message " +
-                    "(posted_by, message_text, time_posted_epoch) " +
-                    "VALUES (?, ?, ?);";
-
-            PreparedStatement preparedStatement = connection.prepareStatement(sql,
-                    PreparedStatement.RETURN_GENERATED_KEYS);
-            preparedStatement.setInt(1, message.getPosted_by());
-            preparedStatement.setString(2, message.getMessage_text());
-            preparedStatement.setLong(3, message.getTime_posted_epoch());
-            preparedStatement.executeUpdate();
-
-            ResultSet resultSet = preparedStatement.getGeneratedKeys();
-            resultSet.next();
-            message.setMessage_id(resultSet.getInt(1));
-
-            return message;
+            String sql = "DELETE FROM message where message_id = ?;";
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setInt(1, messageId);
+            int rowsDeleted = preparedStatement.executeUpdate();
+            return rowsDeleted;
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
-        return null;
+        return 0;
     }
 
     public List<Message> getAllMessages() {
@@ -71,6 +60,30 @@ public class MessageDao {
             message.setMessage_text(resultSet.getString("message_text"));
             message.setPosted_by(resultSet.getInt("posted_by"));
             message.setTime_posted_epoch(resultSet.getLong("time_posted_epoch"));
+            return message;
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return null;
+    }
+
+    public Message insertMessage(Message message) {
+        try (Connection connection = ConnectionUtil.getConnection()) {
+            String sql = "INSERT INTO message " +
+                    "(posted_by, message_text, time_posted_epoch) " +
+                    "VALUES (?, ?, ?);";
+
+            PreparedStatement preparedStatement = connection.prepareStatement(sql,
+                    PreparedStatement.RETURN_GENERATED_KEYS);
+            preparedStatement.setInt(1, message.getPosted_by());
+            preparedStatement.setString(2, message.getMessage_text());
+            preparedStatement.setLong(3, message.getTime_posted_epoch());
+            preparedStatement.executeUpdate();
+
+            ResultSet resultSet = preparedStatement.getGeneratedKeys();
+            resultSet.next();
+            message.setMessage_id(resultSet.getInt(1));
+
             return message;
         } catch (SQLException e) {
             System.out.println(e.getMessage());
